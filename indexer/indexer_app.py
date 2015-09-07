@@ -3,7 +3,7 @@ import json
 import tornado.ioloop
 import tornado.web
 
-from .database import Database
+from database import Database
 
 db = Database()
 
@@ -14,7 +14,9 @@ class Push(tornado.web.RequestHandler):
 
     def post(self):
         global db 
-        db.add_file(**self.json_args)
+        db.add_file(folder=self.json_args['folder'], 
+                    filename=self.json_args['filename'],
+                    file_data=self.json_args['data'])
         
 
 class Files(tornado.web.RequestHandler):
