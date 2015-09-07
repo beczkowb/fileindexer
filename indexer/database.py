@@ -1,4 +1,4 @@
-CHARS = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNMęĘóÓąĄśŚłŁżŻźŹćĆńŃ'
+CHARS = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNMęĘóÓąĄśŚłŁżŻźŹćĆńŃ'
 
 
 class Database(object):
@@ -34,30 +34,25 @@ class Database(object):
 
     def _index_file_data(self, file_id, file_data):
         for line_number, char_number, word in self._words(file_data):
+            print(word)
             if word in self._indexed_files_data and \
                     file_id in self._indexed_files_data[word]:
                 self._indexed_files_data[word][file_id].append({'pos': char_number,
                                                                'line': line_number})
+                print(self._indexed_files_data)
                 continue
             elif word in self._indexed_files_data and \
                     file_id not in self._indexed_files_data[word]:
                 self._indexed_files_data[word][file_id] = [{'pos': char_number,
                                                             'line': line_number}]
+                print(self._indexed_files_data)
                 continue
             self._indexed_files_data[word] = {file_id: [{'pos': char_number,
                                                          'line': line_number}]} 
-
-    """def _words(self, file_data):
-        lines = file_data.split('\n')
-        char_number = 0
-        for line_number, line in enumerate(lines, start=1):
-            words = line.split()
-            for word in words:
-                yield line_number, char_number, word
-                char_number += len(word) + 1"""
+            print(self._indexed_files_data)
 
     def _words(self, file_data):
-        char_number = 1
+        char_number = 0
         line_number = 1
         reading_word = False
         word = ''
@@ -66,18 +61,15 @@ class Database(object):
                 reading_word = True
                 word += char
                 char_number += 1
-                continue
             elif char not in self.word_chars and reading_word: #wychodzimy ze slowa
-                reading_word = False
-                char_number += 1
-                if char == '\n':
-                    line_number += 1
                 word_copy = word[:]
                 word = ''
                 yield line_number, char_number, word_copy
-                continue
+                reading_word = False
+                char_number += len(word_copy)
+                if char == '\n':
+                    line_number += 1
             elif char in self.word_chars and reading_word: #jestesmy w slowie
-                char_number += 1 
                 word += char
             else: #jestesmy po za slowem
                 char_number += 1 
