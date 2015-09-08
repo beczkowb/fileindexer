@@ -17,7 +17,7 @@ class Push(tornado.web.RequestHandler):
         db.add_file(folder=self.json_args['folder'], 
                     filename=self.json_args['filename'],
                     file_data=self.json_args['data'])
-        
+        self.write('<p>OK</p>')
 
 class Files(tornado.web.RequestHandler):
     def get(self):

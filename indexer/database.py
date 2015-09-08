@@ -1,16 +1,14 @@
 CHARS = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNMęĘóÓąĄśŚłŁżŻźŹćĆńŃ'
 
-
 class Database(object):
-    def __init__(self, chars=CHARS):
+    def __init__(self):
         self._files_metadata = {}
         self._indexed_files_data = {}
         self._id_generator = (i for i in range(10000000))
-        self.word_chars = chars
 
     def search(self, word):
         result = []
-        print(self._indexed_files_data[word].items())
+        #print(self._indexed_files_data[word].items())
         for file_id, positions in self._indexed_files_data[word].items():
             element = {'positions': positions}
             element.update(self._files_metadata[file_id])
@@ -34,34 +32,31 @@ class Database(object):
 
     def _index_file_data(self, file_id, file_data):
         for line_number, char_number, word in self._words(file_data):
-            print(word)
             if word in self._indexed_files_data and \
                     file_id in self._indexed_files_data[word]:
                 self._indexed_files_data[word][file_id].append({'pos': char_number,
                                                                'line': line_number})
-                print(self._indexed_files_data)
                 continue
             elif word in self._indexed_files_data and \
                     file_id not in self._indexed_files_data[word]:
                 self._indexed_files_data[word][file_id] = [{'pos': char_number,
                                                             'line': line_number}]
-                print(self._indexed_files_data)
                 continue
             self._indexed_files_data[word] = {file_id: [{'pos': char_number,
                                                          'line': line_number}]} 
-            print(self._indexed_files_data)
+
 
     def _words(self, file_data):
-        char_number = 0
+        char_number = -1
         line_number = 1
         reading_word = False
         word = ''
         for char in file_data: 
-            if char in self.word_chars and not reading_word: #wchodzimy do slowa
+            if char in CHARS and not reading_word: #wchodzimy do slowa
                 reading_word = True
                 word += char
                 char_number += 1
-            elif char not in self.word_chars and reading_word: #wychodzimy ze slowa
+            elif char not in CHARS and reading_word: #wychodzimy ze slowa
                 word_copy = word[:]
                 word = ''
                 yield line_number, char_number, word_copy
@@ -69,9 +64,7 @@ class Database(object):
                 char_number += len(word_copy)
                 if char == '\n':
                     line_number += 1
-            elif char in self.word_chars and reading_word: #jestesmy w slowie
+            elif char in CHARS and reading_word: #jestesmy w slowie
                 word += char
             else: #jestesmy po za slowem
                 char_number += 1 
-                if char == '\n':
-                    line_number += 1
